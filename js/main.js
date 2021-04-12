@@ -1,64 +1,110 @@
 //Variable Declarations
-let board = [];
-let player1Checkers = []; 
-let player2Checkers = [];
+let boardState = [[{},{},{},{},{},{},{},{}], // 8 x 8 array of board tiles (y,x) origin top left of board
+[{},{},{},{},{},{},{},{}],
+[{},{},{},{},{},{},{},{}],
+[{},{},{},{},{},{},{},{}],
+[{},{},{},{},{},{},{},{}],
+[{},{},{},{},{},{},{},{}],
+[{},{},{},{},{},{},{},{}],
+[{},{},{},{},{},{},{},{}]]; 
+
+//Set unplayable tiles
+for(let i = 0; i < boardState.length; i++){
+    for(let j = 0; j < boardState[i].length; j++){
+        if (i%2 == 0){
+            if (j%2 == 0){
+                boardState[i][j].isPlayable = false;
+            }
+        }
+        else if (i%2 != 0){
+            if (j%2 !=0){
+                boardState[i][j].isPlayable = false;
+            }
+        }
+    }
+}
+
+// Set player 2 checkers 
+for(let i = 0; i < 3; i++){
+    for(let j = 0; j < boardState[i].length; j++){
+        if (i%2 !== 0){
+            if (j%2 == 0){
+                boardState[i][j].checker = '2';
+            }
+        }
+        else if (i%2 == 0){
+            if (j%2 !== 0){
+                boardState[i][j].checker = '2';
+            }
+        }
+    }
+}
+
+// Set player 1 checkers
+for(let i = 5; i < boardState.length; i++){
+    for(let j = 0; j < boardState[i].length; j++){
+        if (i%2 !== 0){
+            if (j%2 == 0){
+                boardState[i][j].checker = '1';
+            }
+        }
+        else if (i%2 == 0){
+            if (j%2 !== 0){
+                boardState[i][j].checker = '1';
+            }
+        }
+    }
+}
+
+
+//Board printer:
+// for(let i = 0; i < boardState.length; i++){
+//     for(let j = 0; j < boardState[i].length; j++){
+//         if(boardState[i][j].checker){
+//             console.log(`Board at ${i} and ${j} contains a checker for player ${boardState[i][j].checker}`)
+//         }
+//     }
+// }
 
 // Cached DOM Elements
-player1Checkers = document.getElementsByClassName('player1-checker');
-console.log(player1Checkers);
+let player1CheckersEl = document.getElementsByClassName('player1-checker');
 
-player2Checkers = document.getElementsByClassName('player2-checker');
-console.log(player2Checkers);
+let player2CheckersEl = document.getElementsByClassName('player2-checker');
 
-board = document.getElementsByClassName('board');
-console.log(board);
+let boardEl = document.getElementsByTagName('td');
 
-// let playableSquares = document.querySelectorAll('tr:nth-of-type(2n) > td:nth-of-type(2n+1)','tr:nth-of-type(2n+1) > td:nth-of-type(2n)');
-// console.log(playableSquares);
 
 // Event Listeners
 
-// for (i of player1Checkers){
-//     i.addEventListener('click', function(){
-//         console.log(this);
-//         console.log('event listener added');
-//     })
-// }
+for(i of player1CheckersEl){
+    i.addEventListener('click', function(){
+        console.log('event listener activated');// Add functionality here
+    })
+}
 
-document.getElementsByClassName('player1-checker')[0].addEventListener('click', function(){
-    console.log(this);
-    console.log('event listener added');
-});
-
+for(i of player2CheckersEl){
+    i.addEventListener('click', function(){
+        console.log('event listener activated');// Add functionality here
+    })
+}
 
 // Initialize the game board and place checkers in starting positions
 function init(){
     
 }
 
+function play(){
+    
+}
+
+// Render board and checkers
 function render(){
+    //Send boardState to renderBoard
+    //use renderCheckers(player) in RenderBoard
 
 }
 
+function playerTurn(player){
 
-// function showPosition(elem){
-//     console.log(`function is running `);
-//     elem.textContent = `${elem.offsetTop},${elem.offsetWidth}`;
-//     console.log(`${elem.offsetTop},${elem.offsetWidth}`)
-//     console.log("function ran");
-// }
+}
 
-// const board = document.querySelectorAll('td');
-
-// let mainEl = document.querySelector('main');
-// console.log(mainEl.textContent);
-
-// board.forEach(showPosition);
-
-// console.log(board);
-
-// let checkerEl = document.querySelector('div');
-
-// let cellEl = document.querySelector('#first-cell');
-
-// cellEl.appendChild(checkerEl);
