@@ -1,0 +1,56 @@
+*{
+    box-sizing: border-box;
+}
+
+main{
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    max-height: 100vh;
+
+}
+
+
+table{
+    border: 5px solid saddlebrown;
+    border-collapse: collapse;
+
+}
+
+td{
+    height: 100px;
+    width: 100px;
+    padding: 0;
+    margin: 0;
+    background-color: rgb(195, 183, 168) ;
+}
+
+
+tr:nth-of-type(2n) > td:nth-of-type(2n+1){
+    background-color: rgb(94, 48, 26);
+}
+
+tr:nth-of-type(2n+1) > td:nth-of-type(2n){
+    background-color: rgb(94, 48, 26);
+}
+
+.checker {
+    height: 75px;
+    width: 75px;
+    background-color:red;
+    border-radius: 50%;
+    box-shadow: 5px 5px 4px grey;
+}
+
+#first-cell{
+    color: black;
+}
+
+
+/* td:hover{
+    background-color: red !important;
+    width: 51px;
+    height: 51px;
+} */
+
+
