@@ -1,3 +1,13 @@
+
+
+
+// Initialize the game board and place checkers in starting positions
+function init(){
+    
+}
+
+
+
 // function showPosition(elem){
 //     console.log(`function is running `);
 //     elem.textContent = `${elem.offsetTop},${elem.offsetWidth}`;
@@ -19,4 +29,3 @@
 // let cellEl = document.querySelector('#first-cell');
 
 // cellEl.appendChild(checkerEl);
-
