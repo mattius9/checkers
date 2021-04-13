@@ -11,7 +11,7 @@ main{
 
 }
 h1{
-    display: flex
+    text-transform: uppercase;
 }
 
 table{
