@@ -134,10 +134,10 @@ function showMoves(checkerTile, player){
         let moveRight = pos-9;
         let moveLeftEl = document.getElementById(`${moveLeft}`);
         let moveRightEl = document.getElementById(`${moveRight}`);
-        if(moveLeftEl){
+        if(moveLeftEl && moveLeftEl.innerHTML == ""){
             moveLeftEl.classList.add('available-moves');
         }
-        if(moveRightEl){
+        if(moveRightEl && moveRightEl.innerHTML == ""){
             moveRightEl.classList.add('available-moves');
         }
         return [moveLeftEl,moveRightEl];
@@ -201,8 +201,12 @@ function selectCheckerHandler(e){
         // If it's player 1 turn and a player 1 piece is selected
         // available moves are i - 1, j +/- 1
         let movesAvailable = showMoves(pieceTile,player); //returns the tiles available to move to
+        console.log(``)
         for(m of movesAvailable){
-            if (m)m.addEventListener('click',selectMoveHandler);
+            if (m)m.addEventListener('click',function(e){
+                selectMoveHandler(e,movesAvailable);},{once:true});
+                
+            //console.log(`${m.innerHTML}`);
         }
         
 
@@ -214,7 +218,8 @@ function selectCheckerHandler(e){
         // available moves are i + 1, j+/- 1
         let movesAvailable = showMoves(pieceTile,player); //returns the tiles available to move to
         for(m of movesAvailable){
-            if(m)m.addEventListener('click',selectMoveHandler);
+            if(m)m.addEventListener('click',selectMoveHandler,{once:true});
+            console.log(`${m.innerHTML}`);
         }
 
     }
@@ -225,7 +230,7 @@ function selectCheckerHandler(e){
         
 }
 
-function selectMoveHandler(e){
+function selectMoveHandler(e,movesAvailable){
     
    
     
@@ -247,9 +252,16 @@ function selectMoveHandler(e){
     // console.log(`movePos i is ${movePos.i}, movePos j is ${movePos.j}`)
     // console.log(`${boardState[i][j].checker}`);
     boardState[i][j].checker = player;
+    boardState[prevPos[prevPos.length-1].i][prevPos[prevPos.length-1].j] = 0;
+    for(m of movesAvailable){
+        if (m)m.classList.remove('available-moves');
+    }
+    for(m of movesAvailable){
+        if (m)m.removeEventListener('click',function(){
+            selectMoveHandler(e,movesAvailable);},{once:true});        
+        //console.log(`${m.innerHTML}`);
+    }
     
-    
-    return;
 }
 
 
