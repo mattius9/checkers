@@ -66,6 +66,11 @@ tr:nth-of-type(2n+1) > td:nth-of-type(2n){
     border-radius: 50%;
     box-shadow: 5px 5px 4px #333333
 }
+
+.available-moves{
+    opacity: 50%
+
+}
 /* 
 .player1-checker:hover{
     background-color: rgb(197, 91, 91) !important;
