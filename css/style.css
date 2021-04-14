@@ -71,6 +71,11 @@ tr:nth-of-type(2n+1) > td:nth-of-type(2n){
     opacity: 50%
 
 }
+
+.current-player{
+    color: red;
+    font-style: oblique;
+}
 /* 
 .player1-checker:hover{
     background-color: rgb(197, 91, 91) !important;

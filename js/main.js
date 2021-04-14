@@ -12,7 +12,7 @@ let prevPos = [];
 
 let movePos;
 
-let pieceSelected = false;
+let movesAvailable = [];
 
 let player1PieceHTML = '<div class="player1-checker"></div>';
 let player2PieceHTML = '<div class="player2-checker"></div>';
@@ -26,20 +26,26 @@ let player2PieceHTML = '<div class="player2-checker"></div>';
 //     
 // }
 
+let playerTurn;
 
-// Set player statically temporarily *** DELETE THIS ***
-player = 1;
+let boardEls = document.getElementsByTagName('td');
 
-// Cached DOM Elements
-let player1CheckersEl = document.getElementsByClassName('player1-checker');
+let startEl = document.querySelector('.start');
 
-let player2CheckersEl = document.getElementsByClassName('player2-checker');
+let playerEls = document.getElementsByClassName('player');
 
- let boardEl = document.getElementsByTagName('td');
+startEl.addEventListener('click',startGame);
+
+for(i of boardEls){
+    i.addEventListener('click', select);
+}  
 
 
 // Initialize the game board and place checkers in starting positions
 function init(){
+
+    playerTurn = 1;
+
     //Setting position values
     for(let i = 0; i < boardState.length; i++){
         for(let j = 0; j < boardState[i].length; j++){
@@ -107,17 +113,14 @@ function init(){
                 }
             }
         }
-    }
-
-    // Event Listeners
-
-    for(i of boardEl){
-        i.addEventListener('click', selectPiece);
-    }  
+    }    
 }
 
-function play(){
-    
+function startGame(){
+    startEl.textContent = "RESET";
+    init();
+    renderBoard(boardState);
+
 }
 
 // Render board and checkers
@@ -137,7 +140,6 @@ function renderBoard(b){
             }
         }
     }
-    console.log('board rendering....');
 }
 
 function renderTile(tile){
@@ -153,63 +155,54 @@ function renderTile(tile){
     }
 }
 
-function selectPiece(e){
-        pieceSelected = true;
-        let pieceTile;
-        if (e.target.tagName == 'DIV'){
-            pieceTile = e.target.parentElement;
-        }
-        // else if(e.target.tagName == 'TD' && e.target.firstChild.tagName == 'DIV'){
-        //     pieceTile = e.target;
-        // }
+function renderMoves(movesAvailable){
+    for(m of movesAvailable){
+        if (m)m.classList.remove('available-moves');
+    }
+
+}
+
+function select(e){
+    let pieceTile;
+    // Selecting a piece
+    if (e.target.tagName == 'DIV'){
+        pieceTile = e.target.parentElement;
         let pos=parseInt(pieceTile.id);
-        
         let i = Math.trunc(pos/10);
         let j = pos%10;
         prevPos.push({i:i,j:j});
-        // console.log(`Previous position is ${prevPos[0]}, ${prevPos[1]}`);
         let boardTile = boardState[i][j];
-        if(player == 1 && boardTile.checker == 1){
-        // If it's player 1 turn and a player 1 piece is selected
-        // available moves are i - 1, j +/- 1
-        let movesAvailable = showMoves(pieceTile,player); //returns the tiles available to move to
-        console.log(``)
-        for(m of movesAvailable){
-            if (m)m.addEventListener('click',function(e){
-                selectMove(e,movesAvailable);},{once:true});
-                
-            //console.log(`${m.innerHTML}`);
-        }
+        if(playerTurn == 1 && boardTile.checker == 1){
+    
+            movesAvailable = showMoves(pieceTile,playerTurn); //returns the tiles available to move to
         
-
-
-
-    }
-    else if(player == 2 && boardTile.checker == 2){
-        // If it's player 2 turn and a player 2 piece is selected
-        // available moves are i + 1, j+/- 1
-        let movesAvailable = showMoves(pieceTile,player); //returns the tiles available to move to
-        for(m of movesAvailable){
-            if(m)m.addEventListener('click',selectMove,{once:true});
-            console.log(`${m.innerHTML}`);
         }
-
+        else if(playerTurn == 2 && boardTile.checker == 2){
+            
+            movesAvailable = showMoves(pieceTile,playerTurn); //returns the tiles available to move to
+        }
+        else{
+            alert('not your turn');
+        }
     }
-    else{
-        //alert('not your turn');
-    }
+    // Selecting a move
+    else if(e.target.tagName == 'TD'){
 
+        selectMove(e,movesAvailable);
+    }
         
 }
 
-function showMoves(selectedPieceTile, player){
+function showMoves(selectedPieceTile, playerTurn){
 
     let pos = parseInt(selectedPieceTile.id);
-    if (player == 1){
+    if (playerTurn == 1){
         let moveLeft = pos-11;
         let moveRight = pos-9;
+        
         let moveLeftEl = document.getElementById(`${moveLeft}`);
         let moveRightEl = document.getElementById(`${moveRight}`);
+        
         if(moveLeftEl && moveLeftEl.innerHTML == ""){
             moveLeftEl.classList.add('available-moves');
         }
@@ -218,51 +211,66 @@ function showMoves(selectedPieceTile, player){
         }
         return [moveLeftEl,moveRightEl];
     }
-    else if(player ==2){
+    else if(playerTurn == 2){
         let moveLeft = pos+11;
         let moveRight = pos+9;
+        
         let moveLeftEl = document.getElementById(`${moveLeft}`);
         let moveRightEl = document.getElementById(`${moveRight}`);
-        if(moveLeftEl){
+        
+        if(moveLeftEl && moveLeftEl.innerHTML == ""){
             moveLeftEl.classList.add('available-moves');
         }
-        if(moveRightEl){
+        if(moveRightEl && moveRightEl.innerHTML == ""){
             moveRightEl.classList.add('available-moves');
         }
-        return [moveLeftEl,moveRightEl]; 
+        return [moveLeftEl,moveRightEl];
     }
     
 }
 
-function selectMove(e,movesAvailable){
-        
-    //console.log(`Previous position is: ${prevPos[prevPos.length-1].i},${prevPos[prevPos.length-1].j}`);
+function selectMove(e,movesAvailable){    
     let moveTile = e.target;
+    if (movesAvailable.includes(moveTile)){
+        let pos=parseInt(moveTile.id);
     
- 
-    let pos=parseInt(moveTile.id);
-    
-    // console.log(`Tile ID ${pos}`);
-    
-    let i = Math.trunc(pos/10);
-    let j = pos%10;
-    movePos = {i:i,j:j};
-    // console.log(`movePos i is ${movePos.i}, movePos j is ${movePos.j}`)
-    // console.log(`${boardState[i][j].checker}`);
-    
-    // Take the checker piece element from the previous tile to the chosen tile
-    boardState[i][j].checker = player;
-    boardState[prevPos[prevPos.length-1].i][prevPos[prevPos.length-1].j].checker = 0;
-    
-    for(m of movesAvailable){
-        if (m)m.classList.remove('available-moves');
+        let i = Math.trunc(pos/10);
+        let j = pos%10;
+        movePos = {i:i,j:j};
+        
+        // Take the checker piece element from the previous tile to the chosen tile
+        
+        boardState[i][j].checker = playerTurn;
+        boardState[prevPos[prevPos.length-1].i][prevPos[prevPos.length-1].j].checker = 0;
+        
+        renderMoves(movesAvailable);    
+        renderBoard(boardState);
+        switchPlayer();   
+
     }
-    for(m of movesAvailable){
-        if (m)m.removeEventListener('click',function(){
-            selectMove(e,movesAvailable);},{once:true});        
+    else{
+        alert('invalid move!');
     }
-    renderBoard(boardState);
-    
+   
 }
 
-init();
+function switchPlayer(){
+    if (playerTurn == 1){
+        playerTurn =2;
+    }
+    else{
+        playerTurn = 1;
+    }
+    renderTurn(playerTurn);
+}
+
+function renderTurn(player){
+    for (p of playerEls){
+        if (p.id == player){
+            p.classList.add('current-player');
+        }
+        else{
+            p.classList.remove('current-player');
+        }
+    }
+}
