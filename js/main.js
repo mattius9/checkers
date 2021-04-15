@@ -8,9 +8,11 @@ let boardState = [[{},{},{},{},{},{},{},{}], // 8 x 8 array of board tiles (y,x)
 [{},{},{},{},{},{},{},{}],
 [{},{},{},{},{},{},{},{}]]; 
 
-let prevPos = [];
+let currentPos;
 
 let movePos;
+
+let selectingMove = false;
 
 let movesAvailable = [];
 
@@ -120,6 +122,7 @@ function startGame(){
     startEl.textContent = "RESET";
     init();
     renderBoard(boardState);
+    console.log('RESET!');
 
 }
 
@@ -157,29 +160,31 @@ function renderTile(tile){
 
 function renderMoves(movesAvailable){
     for(m of movesAvailable){
-        if (m)m.classList.remove('available-moves');
+        if (m && m.innerHTML == "")m.classList.add('available-moves');
     }
-
+}
+function unrenderMoves(movesAvailable){
+    for (m of movesAvailable){
+        if(m)m.classList.remove('available-moves');
+    } 
 }
 
 function select(e){
     let pieceTile;
     // Selecting a piece
-    if (e.target.tagName == 'DIV'){
+    if (e.target.tagName == 'DIV'&& !selectingMove){
         pieceTile = e.target.parentElement;
         let pos=parseInt(pieceTile.id);
-        let i = Math.trunc(pos/10);
-        let j = pos%10;
-        prevPos.push({i:i,j:j});
-        let boardTile = boardState[i][j];
+        currentPos = parsePos(pos);
+        let boardTile = boardState[currentPos.i][currentPos.j];
         if(playerTurn == 1 && boardTile.checker == 1){
-    
-            movesAvailable = showMoves(pieceTile,playerTurn); //returns the tiles available to move to
+            movesAvailable = getMoves(pieceTile,playerTurn); //returns the tiles available to move to
+            renderMoves(movesAvailable);
         
         }
-        else if(playerTurn == 2 && boardTile.checker == 2){
-            
-            movesAvailable = showMoves(pieceTile,playerTurn); //returns the tiles available to move to
+        else if(playerTurn == 2 && boardTile.checker == 2){            
+            movesAvailable = getMoves(pieceTile,playerTurn); //returns the tiles available to move to
+            renderMoves(movesAvailable);
         }
         else{
             alert('not your turn');
@@ -189,63 +194,67 @@ function select(e){
     else if(e.target.tagName == 'TD'){
 
         selectMove(e,movesAvailable);
+
     }
         
 }
 
-function showMoves(selectedPieceTile, playerTurn){
-
+function getMoves(selectedPieceTile, playerTurn){
+    selectingMove = true;
     let pos = parseInt(selectedPieceTile.id);
     if (playerTurn == 1){
         let moveLeft = pos-11;
         let moveRight = pos-9;
-        
-        let moveLeftEl = document.getElementById(`${moveLeft}`);
-        let moveRightEl = document.getElementById(`${moveRight}`);
-        
-        if(moveLeftEl && moveLeftEl.innerHTML == ""){
-            moveLeftEl.classList.add('available-moves');
+        let leftPos = parsePos(moveLeft);
+        let rightPos = parsePos(moveRight);
+        let moveLeftEl;
+        let moveRightEl;
+
+        if(boardState[leftPos.i][leftPos.j] && boardState[leftPos.i][leftPos.j].checker == 0){
+            moveLeftEl = document.getElementById(`${moveLeft}`);
         }
-        if(moveRightEl && moveRightEl.innerHTML == ""){
-            moveRightEl.classList.add('available-moves');
-        }
+        if(boardState[rightPos.i][rightPos.j] && boardState[rightPos.i][rightPos.j].checker == 0){
+            moveRightEl = document.getElementById(`${moveRight}`); 
+        }      
         return [moveLeftEl,moveRightEl];
     }
     else if(playerTurn == 2){
         let moveLeft = pos+11;
         let moveRight = pos+9;
+        let leftPos = parsePos(moveLeft);
+        let rightPos = parsePos(moveRight);
         
-        let moveLeftEl = document.getElementById(`${moveLeft}`);
-        let moveRightEl = document.getElementById(`${moveRight}`);
-        
-        if(moveLeftEl && moveLeftEl.innerHTML == ""){
-            moveLeftEl.classList.add('available-moves');
+        if(boardState[leftPos.i][leftPos.j] && boardState[leftPos.i][leftPos.j].checker == 0){
+            moveLeftEl = document.getElementById(`${moveLeft}`);
         }
-        if(moveRightEl && moveRightEl.innerHTML == ""){
-            moveRightEl.classList.add('available-moves');
-        }
+        if(boardState[rightPos.i][rightPos.j] && boardState[rightPos.i][rightPos.j].checker == 0){
+            moveRightEl = document.getElementById(`${moveRight}`); 
+        }         
+
         return [moveLeftEl,moveRightEl];
     }
     
 }
 
-function selectMove(e,movesAvailable){    
+function selectMove(e,movesAvailable){
+    
+    console.log(movesAvailable);    
     let moveTile = e.target;
+    console.log(moveTile);
     if (movesAvailable.includes(moveTile)){
         let pos=parseInt(moveTile.id);
-    
-        let i = Math.trunc(pos/10);
-        let j = pos%10;
-        movePos = {i:i,j:j};
+        movePos = parsePos(pos);
         
         // Take the checker piece element from the previous tile to the chosen tile
         
-        boardState[i][j].checker = playerTurn;
-        boardState[prevPos[prevPos.length-1].i][prevPos[prevPos.length-1].j].checker = 0;
+        boardState[movePos.i][movePos.j].checker = playerTurn;
+        boardState[currentPos.i][currentPos.j].checker = 0;
         
-        renderMoves(movesAvailable);    
+        unrenderMoves(movesAvailable);    
         renderBoard(boardState);
-        switchPlayer();   
+        switchPlayer();
+        selectingMove = false;
+        //movesAvailable = [];   
 
     }
     else{
@@ -273,4 +282,10 @@ function renderTurn(player){
             p.classList.remove('current-player');
         }
     }
+}
+
+function parsePos(pos){
+    let i = Math.trunc(pos/10);
+    let j = pos%10;
+    return {i:i,j:j};
 }
