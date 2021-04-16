@@ -114,9 +114,11 @@ function startGame(){
     init();
     renderBoard(boardState);
     unrenderMoves(movesAvailable);
+    renderTurn(playerTurn);
 }
 // Render board and checkers
 function renderBoard(b){
+    alertEl.textContent = '';
     for(let i = 0; i < b.length; i++){
         for(let j = 0; j < b[i].length; j++){
             if (i%2 == 0){
@@ -285,29 +287,36 @@ function getCaptures(pieceTile,player,captureList){
 function selectMove(e,movesAvailable){
 
     let moveTile = e.target;
-
-    if (movesAvailable.some(function(m){return m['move'] == moveTile})|| movesAvailable.includes(moveTile)){
-        let pos=parseInt(moveTile.id);
-        movePos = parsePos(pos);  
-        // Take the checker piece element from the previous tile to the chosen tile
-        
-        boardState[movePos.i][movePos.j].checker = playerTurn;
-        boardState[currentPos.i][currentPos.j].checker = 0;
+    let pos=parseInt(moveTile.id);
+    movePos = parsePos(pos); 
+    
+    if (movesAvailable.some(function(m){return m['move'] == moveTile})){
         
         for(m of movesAvailable){
             if(m.piece){
                 m.piece.checker = 0;
             }
         }
-
+        boardState[movePos.i][movePos.j].checker = playerTurn;
+        boardState[currentPos.i][currentPos.j].checker = 0;   
+        unrenderMoves(movesAvailable);    
+        renderBoard(boardState);
+        switchPlayer(); 
+    } 
+    else if(movesAvailable.includes(moveTile)){
+         
+        // Take the checker piece element from the previous tile to the chosen tile
+        
+        boardState[movePos.i][movePos.j].checker = playerTurn;
+        boardState[currentPos.i][currentPos.j].checker = 0;     
         unrenderMoves(movesAvailable);    
         renderBoard(boardState);
         switchPlayer();
-
     }
     else{
         alertEl.textContent = 'invalid move!';
     }  
+    
 }
 
 function switchPlayer(){

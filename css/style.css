@@ -8,9 +8,11 @@ main{
     justify-content: center;
     align-items: center;
     max-height: 100vh;
+    margin-top: 20px;
 }
 h1{
     text-transform: uppercase;
+    margin: 0 auto;
 }
 
 table{
@@ -50,7 +52,7 @@ tr:nth-of-type(2n+1) > td:nth-of-type(2n){
 .player1-checker {
     height: 75px;
     width: 75px;
-    background-color:red;
+    background-color:whitesmoke;
     border-radius: 50%;
     box-shadow: 5px 5px 4px #333333
 }
@@ -75,6 +77,14 @@ tr:nth-of-type(2n+1) > td:nth-of-type(2n){
     color: red;
     font-weight: bold;
     background-color: gray; 
+    margin-bottom: 20px;
+}
+.start{
+    border: 1px solid mediumseagreen;
+    background-color: mediumspringgreen;
+    color:mintcream;
+    font-size: large;
+    font-weight: bold;
 }
 
 
