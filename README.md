@@ -7,7 +7,20 @@ A browser-based 2 player turn based game, where players move checker pieces diag
 >Players may use strategy to *protect* their own pieces or lure the opponent into traps to **capture** multiple pieces in one turn. More information on the game of checkers can be found on [Wikipedia](https://en.wikipedia.org/wiki/Draughts).
 ___
 
+## Screenshots
+
+![Initial Board Setup](https://i.imgur.com/qSX6HQ3.png")
+
+
+![Movement Selection](https://i.imgur.com/qxslcmR.png)
+
+![Preparing to Capture a Piece](https://i.imgur.com/kuyJ64X.png)
+
+![Captured a piece](https://i.imgur.com/FpSwZ08.png)
+
+
 ### [Let's Play!](https://mattius9.github.io/checkers/)
+
 
 ## Instructions:
 
