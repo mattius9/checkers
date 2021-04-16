@@ -9,22 +9,12 @@ let boardState = [[{},{},{},{},{},{},{},{}], // 8 x 8 array of board tiles (y,x)
 [{},{},{},{},{},{},{},{}]]; 
 
 let currentPos;
-
 let movePos;
 
 let movesAvailable = [];
 
 let player1PieceHTML = '<div class="player1-checker"></div>';
 let player2PieceHTML = '<div class="player2-checker"></div>';
-
-//boardState objects should appear like this:
-
-/*boardObject = {
-    isPlayable : (true/false)
-    checker : 0, 1, or 2 (3 or 4 for king)
-    position : 01 - 76
-    
-}*/
 
 let playerTurn;
 
@@ -35,13 +25,14 @@ let startEl = document.querySelector('.start');
 
 let playerEls = document.getElementsByClassName('player');
 
+let alertEl = document.querySelector('.alert');
+
 // Event Listeners
 startEl.addEventListener('click',startGame);
 
 for(i of boardEls){
     i.addEventListener('click', select);
 }  
-
 
 // Initialize the game board and place checkers in starting positions
 function init(){
@@ -122,18 +113,15 @@ function startGame(){
     startEl.textContent = "RESET";
     init();
     renderBoard(boardState);
-    console.log('RESET!');
-
+    unrenderMoves(movesAvailable);
 }
-
 // Render board and checkers
 function renderBoard(b){
     for(let i = 0; i < b.length; i++){
         for(let j = 0; j < b[i].length; j++){
             if (i%2 == 0){
                 if (j%2 !== 0){
-                    renderTile(b[i][j]);
-                    
+                    renderTile(b[i][j]);  
                 }                
             }
             else if (i%2 != 0){
@@ -144,6 +132,7 @@ function renderBoard(b){
         }
     }
 }
+
 function renderTile(tile){
     let tileEl = document.getElementById(tile.position);
     if (tile.checker == 1){
@@ -156,18 +145,32 @@ function renderTile(tile){
         tileEl.innerHTML = '';
     }
 }
+
 function renderMoves(movesAvailable){
     for(m of movesAvailable){
         if (m && m.innerHTML == "")m.classList.add('available-moves');
         if(m.move)m.move.classList.add('available-moves');
     }
 }
+
 function unrenderMoves(movesAvailable){
     for (m of movesAvailable){
         if(m.move)m.move.classList.remove('available-moves');
         else{m.classList.remove('available-moves');}
     } 
 }
+
+function renderTurn(player){
+    for (p of playerEls){
+        if (p.id == player){
+            p.classList.add('current-player');
+        }
+        else{
+            p.classList.remove('current-player');
+        }
+    }
+}
+
 function select(e){
     let pieceTile;
     // Selecting a piece
@@ -185,17 +188,15 @@ function select(e){
             renderMoves(movesAvailable);
         }
         else{
-            alert('not your turn');
+            alertEl.textContent = 'not your turn';
         }
     }
     // Selecting a move
     else if(e.target.tagName == 'TD'){
-
         selectMove(e,movesAvailable);
-
-    }
-        
+    }   
 }
+
 function getMoves(selectedPieceTile, playerTurn){
     let movesList = [];
     let captureList = [];
@@ -205,7 +206,6 @@ function getMoves(selectedPieceTile, playerTurn){
     let boardLeft = leftRight.left
     let boardRight = leftRight.right
             
-        
         if(boardLeft){
             moveLeftEl = document.getElementById(`${boardLeft.position}`);
             if(boardLeft.checker == 0){
@@ -215,25 +215,18 @@ function getMoves(selectedPieceTile, playerTurn){
                 movesList = movesList.concat(getCaptures(selectedPieceTile,playerTurn,captureList));
             }
         }
-
         if(boardRight){
             moveRightEl = document.getElementById(`${boardRight.position}`);
             if(boardRight.checker == 0){
                 movesList.push(moveRightEl);
             }
-            else if(boardRight.checker !== playerTurn){
-
-                console.log("selectedPieceTile in getMoves");
-                console.log(selectedPieceTile);
-                
+            else if(boardRight.checker !== playerTurn){                
                 movesList = movesList.concat(getCaptures(selectedPieceTile,playerTurn,captureList));
             } 
-        
         }
-    console.log("IMPORTANT: MOVESLIST");
-    console.log(movesList);
     return movesList;
 }
+
 function getLeftRight(selectedPieceTile, playerTurn){
     let pos = parseInt(selectedPieceTile.id);
     let left,right;
@@ -242,8 +235,6 @@ function getLeftRight(selectedPieceTile, playerTurn){
         let moveRight = pos-9;
         let leftPos = parsePos(moveLeft);
         let rightPos = parsePos(moveRight);
-        console.log("boardState properties");
-        console.log(`${leftPos.i},${leftPos.j}`);
         left = boardState[leftPos.i][leftPos.j];
         right = boardState[rightPos.i][rightPos.j];
     }
@@ -252,25 +243,20 @@ function getLeftRight(selectedPieceTile, playerTurn){
         let moveRight = pos+9;
         let leftPos = parsePos(moveLeft);
         let rightPos = parsePos(moveRight);
-        console.log("boardState properties");
-        console.log(`${leftPos.i},${leftPos.j}`);
         left = boardState[leftPos.i][leftPos.j];
         right = boardState[rightPos.i][rightPos.j];
     }
     return {left:left,right:right};
 }
+
 // Capture directions are described as the compass directions NE (up, right), SE(down,right), SW(down, left), and NW (up, left)
 function getCaptures(pieceTile,player,captureList){
     if (parsePos(pieceTile.id).i !=0 && parsePos(pieceTile.id !=7)){
-        console.log("pieceTile in getCaptures:");
-        console.log(pieceTile);
         let tileToCapture;
         let leftCapture;
         let rightCapture;
         let pieceState = getLeftRight(pieceTile,player);
         //keep adding moves until... left and right paths are blocked
-
-        // if pieceState.left.checker or pieceState.right.checker == 0, do nothing
 
         if(pieceState.left && pieceState.left.checker != playerTurn && pieceState.left.checker !=0){      
             tileToCapture = document.getElementById(pieceState.left.position);
@@ -280,41 +266,25 @@ function getCaptures(pieceTile,player,captureList){
                 captureList.push({move:moveTileEl,piece:pieceState.left});
                 getCaptures(moveTileEl,player,captureList);
             }
-            
-
         }
-
-        console.log("pieceState right in getCaptures");
-        console.log(pieceState.right);
 
         if(pieceState.right && pieceState.right.checker != playerTurn && pieceState.right.checker !=0){        
             tileToCapture = document.getElementById(pieceState.right.position);
             rightCapture = getLeftRight(tileToCapture,playerTurn);
             if(rightCapture.right && rightCapture.right.checker == 0){
-                console.log("Right Capture in getCaptures");
-                console.log(rightCapture);
                 moveTileEl = document.getElementById(rightCapture.right.position);
-                console.log("moveTile in getCaptures:");
-                console.log(moveTileEl);
                 captureList.push(moveTileEl);
                 captureList.push({move:moveTileEl,piece:pieceState.right});
                 getCaptures(moveTileEl,player,captureList)
-            
             }
         }
-    }
-    
-                
-        
-            console.log("CAPTURE LIST");
-            console.log(captureList);        
+    }    
             return captureList;
-}    
+}
+
 function selectMove(e,movesAvailable){
 
     let moveTile = e.target;
-
-    // Add logic that would check if checkers were captured
 
     if (movesAvailable.some(function(m){return m['move'] == moveTile})|| movesAvailable.includes(moveTile)){
         let pos=parseInt(moveTile.id);
@@ -335,23 +305,9 @@ function selectMove(e,movesAvailable){
         switchPlayer();
 
     }
-    // if (movesAvailable.includes(moveTile)){
-    //     let pos=parseInt(moveTile.id);
-    //     movePos = parsePos(pos);
-        
-    //     // Take the checker piece element from the previous tile to the chosen tile
-        
-    //     boardState[movePos.i][movePos.j].checker = playerTurn;
-    //     boardState[currentPos.i][currentPos.j].checker = 0;
-        
-    //     unrenderMoves(movesAvailable);    
-    //     renderBoard(boardState);
-    //     switchPlayer();
-    // }
     else{
-        alert('invalid move!');
-    }
-   
+        alertEl.textContent = 'invalid move!';
+    }  
 }
 
 function switchPlayer(){
@@ -362,17 +318,6 @@ function switchPlayer(){
         playerTurn = 1;
     }
     renderTurn(playerTurn);
-}
-
-function renderTurn(player){
-    for (p of playerEls){
-        if (p.id == player){
-            p.classList.add('current-player');
-        }
-        else{
-            p.classList.remove('current-player');
-        }
-    }
 }
 
 function parsePos(pos){
